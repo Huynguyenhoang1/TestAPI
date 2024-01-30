@@ -1,0 +1,10 @@
+﻿<RevitAddIns>
+    <AddIn Type="Application">
+        <Name>TestTool</Name>
+        <Assembly>TestTool/TestTool.dll</Assembly>
+        <AddInId>5DA0CD5C-9F3F-44D7-BEAB-2475452808E9</AddInId>
+        <FullClassName>TestTool.Application</FullClassName>
+        <VendorId>Development</VendorId>
+        <VendorDescription></VendorDescription>
+    </AddIn>
+</RevitAddIns>
