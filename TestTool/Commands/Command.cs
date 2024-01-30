@@ -1,4 +1,5 @@
-﻿using Autodesk.Revit.Attributes;
+﻿using System.Windows;
+using Autodesk.Revit.Attributes;
 using Autodesk.Revit.DB.Plumbing;
 using Autodesk.Revit.DB;
 using Autodesk.Revit.UI.Selection;
@@ -14,7 +15,7 @@ namespace TestTool.Commands
     {
         public override void Execute()
         {
-            Transaction transaction = new Transaction(Document, "Charge Type System");
+            using Transaction transaction = new Transaction(Document, "Charge Type System");
             transaction.Start();
 
 
@@ -23,11 +24,15 @@ namespace TestTool.Commands
                 .Select(x => GetConnectors(x)).Flatten().Select(x => x as Connector).ToList();
 
             // Lấy đối tượng Connector của ống đầu tiên
-            var connectors1 = GetConnectors((Document.GetElement(UiDocument.Selection.PickObject(ObjectType.Element)) as Pipe));
-
+            var connectors1 =
+                GetConnectors((Document.GetElement(UiDocument.Selection.PickObject(ObjectType.Element)) as Pipe));
+            // get all reference with connector 1
+            List<Autodesk.Revit.DB.Connector> connectorSets = connectors1.Select(x => x.AllRefs)
+                .SelectMany(x => x.Cast<Autodesk.Revit.DB.Connector>())
+                .ToList();
             connectors1.ForEach(x =>
             {
-                listConector.ForEach(a =>
+                connectorSets.ForEach(a =>
                 {
                     if (x.IsConnectedTo(a))
                     {
@@ -35,13 +40,10 @@ namespace TestTool.Commands
                     }
                 });
             });
-
-
-
             transaction.Commit();
         }
 
-        public  List<Connector> GetConnectors( Element element)
+        public List<Connector> GetConnectors(Element element)
         {
             List<Connector> result = new List<Connector>();
             try
@@ -63,7 +65,8 @@ namespace TestTool.Commands
             {
                 throw new Exception(ex.Message);
             }
+
             return result;
         }
-   }
+    }
 }
